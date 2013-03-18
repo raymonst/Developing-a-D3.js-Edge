@@ -44,23 +44,34 @@ var thead = table.append('thead').append('tr');
 
 var tbody = table.append('tbody');
 
-d3.csv('/data/geneva/schedule-real-time.csv', function (err, response) {
+console.log('Drawing Routes and Stops...');
+console.log('Drawing Routes and Stops: Done');
+drawRoutes();
+drawStops();
+loadData();
 
-  data = cleanData(response);
+function loadData(){
+  d3.csv('/data/geneva/lesscolumns.csv')
+    .on("progress", function() { console.log("Loading Data...:", d3.event.loaded); })
+    .get(function (err, response) {
+      console.log('Loading Data: Done');
+      console.log('Cleaning Data...');
+      var data = cleanData(response);
+      console.log('Cleaning Data: Done');
 
-  var minDate = d3.min(data, function (d) {return d.date;}),
-      maxDate = d3.max(data, function (d) {return d.date;}),
-      maxDelay = d3.max(data, function (d) {return d.delay;});
+      thead.selectAll('th')
+        .data(d3.keys(data[0]))
+        .enter().append('td')
+        .text(function (d) {return d;});
 
-thead.selectAll('th')
-  .data(d3.keys(data[0]))
-  .enter().append('td')
-  .text(function (d) {return d;});
-
-  drawTable();
-  transit.add(data);
-  drawRoutes();
-});
+      console.log('Drawing table...');
+      drawTable();
+      console.log('Drawing table: Done');
+      console.log('Init Crossfilter...');
+      transit.add(data);
+      console.log('Init Crossfilter: Done');
+    });
+}
 
 function drawTable () {
   var rows = tbody.selectAll('tr')
@@ -75,7 +86,7 @@ function drawTable () {
     .text(function (d) {return d;});
 
   cells.enter().append('td')
-    .text(function (d) {return d.stopNumber;});
+    .text(function (d) {if(d) return d.stopNumber;}); //TODO: sometimes d gets null
 
   cells.exit().remove();
 }
@@ -101,8 +112,6 @@ function drawRoutes () {
       .enter().append('path')
         .attr("d", path)
         .attr('class', 'route');
-
-    drawStops();
   });
 
 }
@@ -145,25 +154,25 @@ function cleanData (data) {
     d.stopTimeReal = timeFormat.parse(d.stopTimeReal);
     d.stopTimeSchedule = timeFormat.parse(d.stopTimeSchedule);
     d.delay = d.stopTimeReal - d.stopTimeSchedule;
-    d.tripLength = +d.tripLength;
+//    d.tripLength = +d.tripLength;
     d.passengerCountTripUp = +d.passengerCountTripUp;
     d.passengerCountTripDown = +d.passengerCountTripDown;
     d.passengerCountStopUp = +d.passengerCountStopUp;
     d.passengerCountStopDown = +d.passengerCountStopDown;
-    d.passengerLoadStop = +d.passengerLoadStop;
-    d.passengerCountDoor1Up = +d.passengerCountDoor1Up;
-    d.passengerCountDoor1Down = +d.passengerCountDoor1Down;
-    d.passengerCountDoor2Up = +d.passengerCountDoor2Up;
-    d.passengerCountDoor2Down = +d.passengerCountDoor2Down;
-    d.passengerCountDoor3Up = +d.passengerCountDoor3Up;
-    d.passengerCountDoor3Down = +d.passengerCountDoor3Down;
-    d.passengerCountDoor4Up = +d.passengerCountDoor4Up;
-    d.passengerCountDoor4Down = +d.passengerCountDoor4Down;
-    d.passengerCountDoor5Up = +d.passengerCountDoor5Up;
-    d.passengerCountDoor5Down = +d.passengerCountDoor5Down;
-    d.passengerCountDoor6Up = +d.passengerCountDoor6Up;
-    d.passengerCountDoor6Down = +d.passengerCountDoor6Down;
-    d.stopLength = +d.stopLength;
+//    d.passengerLoadStop = +d.passengerLoadStop;
+//    d.passengerCountDoor1Up = +d.passengerCountDoor1Up;
+//    d.passengerCountDoor1Down = +d.passengerCountDoor1Down;
+//    d.passengerCountDoor2Up = +d.passengerCountDoor2Up;
+//    d.passengerCountDoor2Down = +d.passengerCountDoor2Down;
+//    d.passengerCountDoor3Up = +d.passengerCountDoor3Up;
+//    d.passengerCountDoor3Down = +d.passengerCountDoor3Down;
+//    d.passengerCountDoor4Up = +d.passengerCountDoor4Up;
+//    d.passengerCountDoor4Down = +d.passengerCountDoor4Down;
+//    d.passengerCountDoor5Up = +d.passengerCountDoor5Up;
+//    d.passengerCountDoor5Down = +d.passengerCountDoor5Down;
+//    d.passengerCountDoor6Up = +d.passengerCountDoor6Up;
+//    d.passengerCountDoor6Down = +d.passengerCountDoor6Down;
+//    d.stopLength = +d.stopLength;
     d.passengerDelta = d.passengerCountTripUp - d.passengerCountTripDown;
   });
   return data;
