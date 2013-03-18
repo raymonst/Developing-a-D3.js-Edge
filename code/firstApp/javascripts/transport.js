@@ -106,12 +106,12 @@ function drawStops () {
 }
 
 function drawRoutes () {
-  d3.json('./data/geneva/geo/geojson/routes.json', function (err, data) {
-    svg.selectAll(".route")
-        .data(data.features)
-      .enter().append('path')
-        .attr("d", path)
-        .attr('class', 'route');
+  d3.json('./data/geneva/geo/topojson/routes.json', function (err, data) {
+    svg.append("path")
+      .attr('class', 'route')
+      .datum(topojson.object(data, data.objects.routes))
+      .attr('d', d3.geo.path().projection(projection));
+
     drawStops();
   });
 }
