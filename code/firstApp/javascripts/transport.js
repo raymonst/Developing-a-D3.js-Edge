@@ -45,14 +45,12 @@ var thead = table.append('thead').append('tr');
 var tbody = table.append('tbody');
 
 console.log('Drawing Routes and Stops...');
-console.log('Drawing Routes and Stops: Done');
 drawRoutes();
-drawStops();
-loadData();
 
 function loadData(){
-  d3.csv('/data/geneva/lesscolumns.csv')
-    .on("progress", function() { console.log("Loading Data...:", d3.event.loaded); })
+  console.log("Loading Data...:");
+  d3.csv('./data/geneva/lesscolumns.csv')
+    .on("progress", function() { console.dir("Still Loading"); })
     .get(function (err, response) {
       console.log('Loading Data: Done');
       console.log('Cleaning Data...');
@@ -93,7 +91,7 @@ function drawTable () {
 
 
 function drawStops () {
-  d3.json('/data/geneva/geo/geojson/stops.json', function (err, data) {
+  d3.json('./data/geneva/geo/geojson/stops.json', function (err, data) {
     svg.selectAll('.stop')
         .data(data.features)
       .enter().append('circle')
@@ -102,18 +100,20 @@ function drawStops () {
         .attr('r', 2)
         .attr('class', 'stop')
         .on('mouseover', mouseover);
+    console.log('Drawing Routes and Stops: Done');
+    loadData();
   });
 }
 
 function drawRoutes () {
-  d3.json('/data/geneva/geo/geojson/routes.json', function (err, data) {
+  d3.json('./data/geneva/geo/geojson/routes.json', function (err, data) {
     svg.selectAll(".route")
         .data(data.features)
       .enter().append('path')
         .attr("d", path)
         .attr('class', 'route');
+    drawStops();
   });
-
 }
 
 function redraw(d) {
