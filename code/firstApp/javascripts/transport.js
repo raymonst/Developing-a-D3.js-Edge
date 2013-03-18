@@ -49,7 +49,7 @@ drawRoutes();
 
 function loadData(){
   console.log("Loading Data...:");
-  d3.csv('./data/geneva/lesscolumns.csv')
+  d3.csv('./data/geneva/lesscolumns.txt')
     .on("progress", function() { console.dir("Still Loading"); })
     .get(function (err, response) {
       console.log('Loading Data: Done');
